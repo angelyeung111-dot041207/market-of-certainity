@@ -209,11 +209,11 @@
   <div class="hero-bg-text" aria-hidden="true">MARKET</div>
   <div class="hero-tag">Data Justice Project · 2025</div>
   <h1>How Prediction Platforms <em>Commodify</em> Democracy</h1>
-  <p class="hero-sub">A data-driven investigation into the hidden power structures, information asymmetries, and social harms embedded in prediction markets like Polymarket and Kalshi.</p>
+  <p class="hero-sub">A data-driven investigation into the hidden power structures, information asymmetries, and social harms embedded in prediction markets like Polymarket.</p>
   <div class="hero-meta">
     <div><span class="hero-meta-label">Markets analyzed</span><span class="hero-meta-val">524</span></div>
     <div><span class="hero-meta-label">Trades in dataset</span><span class="hero-meta-val">3,500</span></div>
-    <div><span class="hero-meta-label">Platforms</span><span class="hero-meta-val">Polymarket · Kalshi</span></div>
+    <div><span class="hero-meta-label">Platforms</span><span class="hero-meta-val">Polymarket</span></div>
     <div><span class="hero-meta-label">Team</span><span class="hero-meta-val">Yeung · Carmel · Somani</span></div>
   </div>
   <div class="scroll-hint" aria-hidden="true">Scroll</div>
