@@ -254,7 +254,7 @@
     <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">A power-law distribution governs volume across markets. The top 10 markets capture half of all money — 471 markets split just 20% of the remainder. This is not crowd wisdom; it is structural concentration.</p>
     <div class="viz-block">
       <div class="viz-img-wrap">
-        <img src="Screenshot_2026-04-29_at_1_06_28_PM.png" alt="Bar chart showing volume distribution across 524 Polymarket markets. Top 10 markets capture 50% of all volume. Cumulative curve shows rank 53 reaches 80%.">
+        <img src="524 market.png" alt="Bar chart showing volume distribution across 524 Polymarket markets. Top 10 markets capture 50% of all volume. Cumulative curve shows rank 53 reaches 80%.">
       </div>
       <p class="viz-caption">Data: Polymarket snapshot (n=3,500 trades, 524 markets). 67% of markets are 80%+ buy-sided — indicating one-directional pressure. The cumulative curve (bottom panel) shows how steeply volume concentrates at the top.</p>
     </div>
@@ -347,7 +347,7 @@
     <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">54% of trades are micro transactions under $10 — yet they represent just 5% of volume. Meanwhile, whale trades (over $1,000) make up 0.5% of all transactions but drive 33% of total dollar volume. The crowd votes; the whales decide.</p>
     <div class="viz-block">
       <div class="viz-img-wrap">
-        <img src="Screenshot_2026-04-29_at_1_06_55_PM.png" alt="Grouped bar chart comparing percentage of trades vs percentage of volume across trade size categories from Micro under $10 to Whale over $1000. Whale tier: 0.5% of trades, 33% of volume.">
+        <img src="the whale problem.png" alt="Grouped bar chart comparing percentage of trades vs percentage of volume across trade size categories from Micro under $10 to Whale over $1000. Whale tier: 0.5% of trades, 33% of volume.">
       </div>
       <p class="viz-caption">Data: Polymarket trades snapshot (n=3,500). Whale trades = top 18 transactions by size. The gap between blue (trade count) and orange (volume) bars reveals the extreme leverage of large-account actors.</p>
     </div>
@@ -362,7 +362,7 @@
     <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">Within a single 3.5-minute observation window, $21,275 moved in one second. Speed is not neutral — algorithmic actors with co-located infrastructure can front-run slower retail participants before any human can react.</p>
     <div class="viz-block">
       <div class="viz-img-wrap">
-        <img src="Screenshot_2026-04-29_at_1_07_14_PM.png" alt="Two-panel chart showing USD volume per second and trade count per second across a 3.5-minute window. Two spikes: $13,709 and $21,275 in single seconds. Trade count surges to 180+ near end of window.">
+        <img src="microseconds of power.png" alt="Two-panel chart showing USD volume per second and trade count per second across a 3.5-minute window. Two spikes: $13,709 and $21,275 in single seconds. Trade count surges to 180+ near end of window.">
       </div>
       <p class="viz-caption">Data: Polymarket trades snapshot, 2026-04-27. Each bar = 1 second. The top spike of $21,275 in one second — paired with an explosion in trade count to 180+ — is consistent with algorithmic execution, not retail participation.</p>
     </div>
