@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market of Certainty</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1714; --paper: #f5f1e8; --muted: #7a7469;
+    --accent: #c0392b; --accent2: #2c3e50; --border: rgba(26,23,20,0.12);
+    --serif: 'Playfair Display', Georgia, serif;
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    --color-background-primary: #f5f1e8;
+    --color-background-secondary: rgba(26,23,20,0.05);
+    --color-text-primary: #1a1714;
+    --color-text-secondary: #7a7469;
+    --color-border-secondary: rgba(26,23,20,0.2);
+    --color-border-tertiary: rgba(26,23,20,0.1);
+    --border-radius-md: 6px;
+    --font-mono: 'DM Mono', monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-size: 17px; line-height: 1.75; overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(245,241,232,0.94); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 7rem 2.5rem 4rem; position: relative; border-bottom: 1px solid var(--border); overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-family: var(--serif); font-size: clamp(6rem, 15vw, 14rem); font-weight: 700;
+    color: rgba(26,23,20,0.04); white-space: nowrap; pointer-events: none; user-select: none; letter-spacing: -0.03em;
+  }
+  .hero-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; max-width: 900px; margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 520px; margin-bottom: 3rem; font-weight: 300; }
+  .hero-meta { display: flex; gap: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .hero-meta-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+  .hero-meta-val { font-size: 0.95rem; font-weight: 500; }
+  .scroll-hint { position: absolute; bottom: 2rem; right: 2.5rem; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; writing-mode: vertical-rl; display: flex; align-items: center; gap: 8px; }
+  .scroll-hint::before { content: ''; width: 1px; height: 40px; background: var(--border); display: block; }
+
+  /* LAYOUT */
+  .w-section { padding: 5rem 2.5rem; border-bottom: 1px solid var(--border); }
+  .w-inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+  .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent); opacity: 0.4; }
+  h2.section-title { font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 1.5rem; }
+
+  .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .intro-lead { font-family: var(--serif); font-size: 1.25rem; line-height: 1.6; }
+  .intro-body { font-size: 0.95rem; color: var(--muted); line-height: 1.8; }
+  .intro-body p + p { margin-top: 1rem; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--border); margin: 3rem 0; }
+  .stat-card { padding: 2rem 1.5rem; background: var(--paper); border-right: 1px solid var(--border); }
+  .stat-card:last-child { border-right: none; }
+  .stat-number { font-family: var(--serif); font-size: 3rem; font-weight: 700; line-height: 1; color: var(--accent); margin-bottom: 0.5rem; }
+  .stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+  /* PULL QUOTE */
+  .pull-quote { padding: 4rem 2.5rem; background: var(--accent2); color: #f5f1e8; text-align: center; border-bottom: 1px solid var(--border); }
+  .pull-quote blockquote { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 2.2rem); font-style: italic; line-height: 1.4; max-width: 760px; margin: 0 auto 1rem; }
+  .pull-quote cite { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.5; font-style: normal; }
+
+  /* VIZ */
+  .viz-block { margin-top: 2.5rem; }
+  .viz-img-wrap { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); background: #faf7f0; }
+  .viz-img-wrap img { width: 100%; height: auto; display: block; }
+  .viz-caption { margin-top: 1.25rem; font-size: 0.85rem; color: var(--muted); font-style: italic; border-left: 2px solid var(--accent); padding-left: 1rem; line-height: 1.6; }
+
+  /* INTERACTIVE EMBED */
+  .interactive-embed-wrap {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .interactive-embed-header {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.75rem;
+    background: rgba(26,23,20,0.03);
+  }
+  .interactive-badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--accent); color: #fff;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .interactive-title {
+    font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+  }
+  .interactive-body { padding: 1.5rem 1.25rem; }
+
+  /* 100% BUY CLUB WIDGET STYLES */
+  .buyclub * { box-sizing: border-box; }
+  .buyclub .header { padding: 0.5rem 0 0.5rem; }
+  .buyclub .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .buyclub .kpi { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+  .buyclub .kpi-label { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 4px; font-family: var(--mono); letter-spacing: 0.05em; }
+  .buyclub .kpi-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0; font-family: var(--serif); }
+  .buyclub .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .buyclub .controls label { font-size: 13px; color: var(--color-text-secondary); font-family: var(--mono); }
+  .buyclub .controls select { font-size: 13px; padding: 4px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .buyclub .controls input[type=range] { width: 120px; }
+  .buyclub .controls span { font-size: 13px; font-weight: 500; min-width: 28px; color: var(--color-text-primary); font-family: var(--mono); }
+  .buyclub .chart-wrap { position: relative; width: 100%; }
+  .buyclub .legend { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+  .buyclub .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); font-family: var(--mono); }
+  .buyclub .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .buyclub .table-wrap { margin-top: 1.5rem; overflow-x: auto; }
+  .buyclub table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  .buyclub th { text-align: left; padding: 6px 10px; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); font-family: var(--mono); }
+  .buyclub td { padding: 7px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); word-break: break-all; }
+  .buyclub tr:last-child td { border-bottom: none; }
+  .buyclub .badge { display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+  .buyclub .badge-red { background: #FCEBEB; color: #A32D2D; }
+  .buyclub .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .buyclub .badge-green { background: #EAF3DE; color: #3B6D11; }
+  .buyclub .bar-bg { background: var(--color-border-tertiary); border-radius: 3px; height: 8px; width: 100%; }
+  .buyclub .bar-fill { height: 8px; border-radius: 3px; transition: width 0.3s; }
+
+  /* CASES */
+  .cases-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; border: 1px solid var(--border); }
+  .case-card { padding: 2rem 1.75rem; background: var(--paper); border-right: 1px solid var(--border); transition: background 0.2s; }
+  .case-card:last-child { border-right: none; }
+  .case-card:hover { background: rgba(192,57,43,0.04); }
+  .case-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .case-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; }
+  .case-body { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+  /* JUSTICE */
+  .justice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+  .justice-item { padding: 1.75rem; border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 2px; }
+  .justice-item h3 { font-family: var(--serif); font-size: 1.1rem; margin-bottom: 0.6rem; font-weight: 700; }
+  .justice-item p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+  /* METHODOLOGY */
+  .method-step { display: grid; grid-template-columns: 60px 1fr; gap: 1.5rem; padding: 2rem 0; border-top: 1px solid var(--border); align-items: start; }
+  .method-num { font-family: var(--serif); font-size: 2.5rem; font-weight: 700; color: rgba(26,23,20,0.1); line-height: 1; }
+  .method-content h3 { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .method-content p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+  .method-content code { display: inline-block; font-family: var(--mono); font-size: 0.78rem; background: rgba(26,23,20,0.06); padding: 2px 8px; border-radius: 3px; margin-top: 0.5rem; color: var(--accent2); }
+
+  /* TEAM */
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; border: 1px solid var(--border); }
+  .team-card { padding: 2rem 1.75rem; background: var(--paper); border-right: 1px solid var(--border); }
+  .team-card:last-child { border-right: none; }
+  .team-initial { width: 44px; height: 44px; border-radius: 50%; background: var(--accent2); color: #f5f1e8; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 14px; font-weight: 500; margin-bottom: 1rem; }
+  .team-name { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .team-role { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .team-bio { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+  footer { padding: 3rem 2.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted); }
+  .footer-note { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .hero h1, .hero .hero-sub, .hero .hero-tag, .hero .hero-meta { animation: fadeUp 0.7s ease both; }
+  .hero .hero-tag { animation-delay: 0.1s; }
+  .hero h1 { animation-delay: 0.25s; }
+  .hero .hero-sub { animation-delay: 0.4s; }
+  .hero .hero-meta { animation-delay: 0.55s; }
+
+  @media (max-width: 760px) {
+    .intro-grid, .justice-grid, .team-grid, .cases-grid, .stats-row { grid-template-columns: 1fr; }
+    .buyclub .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    nav .nav-links { display: none; }
+    .hero { padding: 6rem 1.5rem 3rem; }
+    .w-section { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Market of Certainty</span>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#viz1">524 Markets</a></li>
+    <li><a href="#viz2">100% Buy Club</a></li>
+    <li><a href="#viz3">Whale Problem</a></li>
+    <li><a href="#viz4">Microseconds</a></li>
+    <li><a href="#justice">Justice</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-bg-text" aria-hidden="true">MARKET</div>
+  <div class="hero-tag">Data Justice Project · 2025</div>
+  <h1>How Prediction Platforms <em>Commodify</em> Democracy</h1>
+  <p class="hero-sub">A data-driven investigation into the hidden power structures, information asymmetries, and social harms embedded in prediction markets like Polymarket and Kalshi.</p>
+  <div class="hero-meta">
+    <div><span class="hero-meta-label">Markets analyzed</span><span class="hero-meta-val">524</span></div>
+    <div><span class="hero-meta-label">Trades in dataset</span><span class="hero-meta-val">3,500</span></div>
+    <div><span class="hero-meta-label">Platforms</span><span class="hero-meta-val">Polymarket · Kalshi</span></div>
+    <div><span class="hero-meta-label">Team</span><span class="hero-meta-val">Yeung · Carmel · Somani</span></div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">Scroll</div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="w-section" id="overview">
+  <div class="w-inner">
+    <div class="section-label">Overview</div>
+    <h2 class="section-title">The myth of the crowd</h2>
+    <div class="intro-grid">
+      <div class="intro-lead">Prediction markets promise objectivity — a crowd-sourced oracle immune to bias. But behind the probability curves lies a different reality: thin markets, concentrated power, and populations turned into tradable assets.</div>
+      <div class="intro-body">
+        <p>Platforms like Polymarket present themselves as neutral aggregators of distributed knowledge. Their pricing data, visualized as smooth curves, tells a story of rational updating and efficient markets.</p>
+        <p>Our analysis of 3,500 trades across 524 markets reveals a counter-narrative: just 10 markets capture 50% of all volume. Just 0.5% of trades — the whale tier — control 33% of money. And $21,275 can move in a single second.</p>
+        <p>The communities most affected by the events being traded never appear in the dataset at all. Their lives are the stakes; their voices are absent.</p>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-number">524</div><div class="stat-label">Markets analyzed</div></div>
+      <div class="stat-card"><div class="stat-number">10</div><div class="stat-label">Markets hold 50% of volume</div></div>
+      <div class="stat-card"><div class="stat-number">0.5%</div><div class="stat-label">Of trades control 33% of money</div></div>
+      <div class="stat-card"><div class="stat-number">67%</div><div class="stat-label">Markets are 80%+ buy-sided</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pull-quote">
+  <blockquote>"The data is framed as 'the wisdom of the crowd' — but the crowd is filtered by KYC rules, jurisdictional restrictions, and the need for disposable capital."</blockquote>
+  <cite>From the data reflection</cite>
+</div>
+
+<!-- VIZ 1: 524 Markets -->
+<div class="w-section" id="viz1">
+  <div class="w-inner">
+    <div class="section-label">Evidence · 01</div>
+    <h2 class="section-title">"524 Markets — But Only a Few Matter"</h2>
+    <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">A power-law distribution governs volume across markets. The top 10 markets capture half of all money — 471 markets split just 20% of the remainder. This is not crowd wisdom; it is structural concentration.</p>
+    <div class="viz-block">
+      <div class="viz-img-wrap">
+        <img src="Screenshot_2026-04-29_at_1_06_28_PM.png" alt="Bar chart showing volume distribution across 524 Polymarket markets. Top 10 markets capture 50% of all volume. Cumulative curve shows rank 53 reaches 80%.">
+      </div>
+      <p class="viz-caption">Data: Polymarket snapshot (n=3,500 trades, 524 markets). 67% of markets are 80%+ buy-sided — indicating one-directional pressure. The cumulative curve (bottom panel) shows how steeply volume concentrates at the top.</p>
+    </div>
+  </div>
+</div>
+
+<!-- VIZ 2: 100% Buy Club — LIVE INTERACTIVE -->
+<div class="w-section" id="viz2">
+  <div class="w-inner">
+    <div class="section-label">Evidence · 02</div>
+    <h2 class="section-title">The 100% Buy Club</h2>
+    <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">Markets where 100% of recorded trades are buys have no counterparty — no one is betting the other way. These are not probabilities derived from disagreement; they are single-position assertions dressed up as crowd consensus. Filter and explore the data below.</p>
+    <div class="viz-block">
+      <div class="interactive-embed-wrap">
+        <div class="interactive-embed-header">
+          <span class="interactive-badge">Interactive</span>
+          <span class="interactive-title">100% Buy Club · Live market explorer — adjust filters to explore</span>
+        </div>
+        <div class="interactive-body">
+          <!-- ========== 100% BUY CLUB WIDGET ========== -->
+          <div class="buyclub">
+            <h2 class="sr-only">The 100% Buy Club — markets ranked by one-sided pressure and low trade count</h2>
+            <div class="header">
+              <div class="kpi-grid" id="kpis"></div>
+              <div class="controls">
+                <label>Min buy %</label>
+                <input type="range" min="50" max="100" value="80" step="1" id="minBuy" oninput="document.getElementById('minBuyVal').textContent=this.value+'%';render()">
+                <span id="minBuyVal">80%</span>
+                <label style="margin-left:12px;">Max trades</label>
+                <input type="range" min="1" max="50" value="50" step="1" id="maxTrades" oninput="document.getElementById('maxTradesVal').textContent=this.value;render()">
+                <span id="maxTradesVal">50</span>
+                <label style="margin-left:12px;">Sort by</label>
+                <select id="sortBy" onchange="render()">
+                  <option value="buyPct">Buy %</option>
+                  <option value="trades">Trade count</option>
+                  <option value="volume">Total volume</option>
+                  <option value="suspicion">Suspicion score</option>
+                </select>
+                <label style="margin-left:12px;">Top</label>
+                <select id="topN" onchange="render()">
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="50" selected>50</option>
+                  <option value="999">All</option>
+                </select>
+              </div>
+              <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#E24B4A;"></div>100% buy (zero sells)</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>90–99% buy</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#639922;"></div>&lt;90% buy</div>
+              </div>
+              <div class="chart-wrap">
+                <div style="position:relative;width:100%;height:420px;">
+                  <canvas id="mainChart" role="img" aria-label="Horizontal bar chart of markets ranked by one-sided buy pressure"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:32px;">#</th>
+                    <th style="width:90px;">Market ID</th>
+                    <th style="width:70px;">Trades</th>
+                    <th style="width:80px;">Buy %</th>
+                    <th style="width:90px;">Buy vol</th>
+                    <th style="width:90px;">Sell vol</th>
+                    <th style="width:120px;">Buy pressure bar</th>
+                    <th style="width:90px;">Suspicion</th>
+                    <th>Market hash (short)</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- ========== END WIDGET ========== -->
+        </div>
+      </div>
+      <p class="viz-caption">Data: Polymarket trades snapshot. Each row is one market. "Suspicion score" weights buy-side pressure against trade count — a market with 100% buys and only 1 trade scores higher than one with 90% buys and 40 trades. Use the sliders to filter by minimum buy-side % and maximum trade count.</p>
+    </div>
+  </div>
+</div>
+
+<!-- VIZ 3: Whale Problem -->
+<div class="w-section" id="viz3">
+  <div class="w-inner">
+    <div class="section-label">Evidence · 03</div>
+    <h2 class="section-title">"The Whale Problem" — A Tiny Fraction Controls the Money</h2>
+    <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">54% of trades are micro transactions under $10 — yet they represent just 5% of volume. Meanwhile, whale trades (over $1,000) make up 0.5% of all transactions but drive 33% of total dollar volume. The crowd votes; the whales decide.</p>
+    <div class="viz-block">
+      <div class="viz-img-wrap">
+        <img src="Screenshot_2026-04-29_at_1_06_55_PM.png" alt="Grouped bar chart comparing percentage of trades vs percentage of volume across trade size categories from Micro under $10 to Whale over $1000. Whale tier: 0.5% of trades, 33% of volume.">
+      </div>
+      <p class="viz-caption">Data: Polymarket trades snapshot (n=3,500). Whale trades = top 18 transactions by size. The gap between blue (trade count) and orange (volume) bars reveals the extreme leverage of large-account actors.</p>
+    </div>
+  </div>
+</div>
+
+<!-- VIZ 4: Microseconds -->
+<div class="w-section" id="viz4">
+  <div class="w-inner">
+    <div class="section-label">Evidence · 04</div>
+    <h2 class="section-title">"Microseconds of Power" — Who Is Trading, and When?</h2>
+    <p style="color: var(--muted); font-size: 0.95rem; max-width: 680px;">Within a single 3.5-minute observation window, $21,275 moved in one second. Speed is not neutral — algorithmic actors with co-located infrastructure can front-run slower retail participants before any human can react.</p>
+    <div class="viz-block">
+      <div class="viz-img-wrap">
+        <img src="Screenshot_2026-04-29_at_1_07_14_PM.png" alt="Two-panel chart showing USD volume per second and trade count per second across a 3.5-minute window. Two spikes: $13,709 and $21,275 in single seconds. Trade count surges to 180+ near end of window.">
+      </div>
+      <p class="viz-caption">Data: Polymarket trades snapshot, 2026-04-27. Each bar = 1 second. The top spike of $21,275 in one second — paired with an explosion in trade count to 180+ — is consistent with algorithmic execution, not retail participation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CASES -->
+<div class="w-section" id="cases">
+  <div class="w-inner">
+    <div class="section-label">Case Studies</div>
+    <h2 class="section-title">When markets meet power</h2>
+    <p style="color: var(--muted); max-width: 600px;">Documented incidents that expose the structural advantages certain actors hold in prediction markets.</p>
+    <div class="cases-grid">
+      <div class="case-card">
+        <div class="case-tag">Insider trading</div>
+        <div class="case-title">The Maduro Bet</div>
+        <div class="case-body">A politically sensitive market on Venezuela's government saw suspicious positioning in the hours before a major diplomatic announcement — heavy whale positions appearing before public confirmation, consistent with access to non-public information.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-tag">Employee trading</div>
+        <div class="case-title">Platform insiders</div>
+        <div class="case-body">Documented cases of platform employees or close contacts trading on markets where they possessed advance knowledge of platform decisions, regulatory outcomes, or unpublished data — raising direct conflict-of-interest questions.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-tag">Regulatory gap</div>
+        <div class="case-title">CFTC / SEC jurisdiction</div>
+        <div class="case-body">Prediction markets occupy a gray zone between securities law and futures regulation. CFTC enforcement actions have been limited and inconsistent, leaving structural information advantages largely unchecked.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JUSTICE -->
+<div class="w-section" id="justice">
+  <div class="w-inner">
+    <div class="section-label">Data Justice</div>
+    <h2 class="section-title">Who is visible. Who is not.</h2>
+    <p style="color: var(--muted); max-width: 640px;">The architecture of prediction market data encodes assumptions about who matters, whose knowledge counts, and whose suffering is legible.</p>
+    <div class="justice-grid">
+      <div class="justice-item"><h3>Commodification of democracy</h3><p>Citizens' collective decisions — elections, referenda, policy votes — become instruments for profit extraction. The incentive structure rewards accuracy over accountability, speed over deliberation.</p></div>
+      <div class="justice-item"><h3>Information asymmetry</h3><p>Private Discord servers, government leaks, and corporate insider access create structural advantages invisible in the public trade data. The playing field is not level; the data does not show this.</p></div>
+      <div class="justice-item"><h3>Exclusion by design</h3><p>KYC requirements, jurisdictional restrictions, and the need for disposable capital filter who can participate. The resulting "crowd" is not a representative public — it is a financially privileged subset.</p></div>
+      <div class="justice-item"><h3>Abstraction of harm</h3><p>Markets on war, deportation, and political repression reduce affected populations to binary outcomes. People become implicit categories — "migrants," "casualties," "voters" — stripped of identity and proximity to harm.</p></div>
+      <div class="justice-item"><h3>Truth by market</h3><p>When media and policymakers cite prediction market probabilities as ground truth, they launder the perspectives of wealthy speculators into apparently neutral epistemic claims. Markets don't reveal truth; they reflect power.</p></div>
+      <div class="justice-item"><h3>Missing voices</h3><p>Interviews with affected communities, ethnography of trader spaces, and movement archives could surface what trade logs cannot: how people experience being turned into speculative assets, and how they resist.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- METHODOLOGY -->
+<div class="w-section" id="methodology">
+  <div class="w-inner">
+    <div class="section-label">Methodology</div>
+    <h2 class="section-title">How we built this</h2>
+    <div>
+      <div class="method-step"><div class="method-num">01</div><div class="method-content"><h3>Data collection via Polymarket APIs</h3><p>A Python script called the public Gamma and Data APIs to list active markets, then looped over market IDs to download raw trade histories. Fields normalized: timestamp, volume, side, market_id.</p><code>Gamma API → market list → Data API → trade histories → CSV</code></div></div>
+      <div class="method-step"><div class="method-num">02</div><div class="method-content"><h3>Cleaning & normalization</h3><p>Missing timestamps corrected, duplicate entries removed, contract definitions standardized across 524 markets. Binary framing of each contract documented alongside platform-assigned category labels.</p><code>524 markets · pandas · datetime normalization</code></div></div>
+      <div class="method-step"><div class="method-num">03</div><div class="method-content"><h3>Visualization & analysis</h3><p>Volume concentration charts, whale-tier grouped bar charts, second-by-second trade timing analysis, and interactive 100% Buy Club explorer. Jupyter Notebook as the primary analytical environment.</p><code>matplotlib · seaborn · Chart.js · Jupyter Notebook</code></div></div>
+      <div class="method-step"><div class="method-num">04</div><div class="method-content"><h3>Contextual interpretation</h3><p>Trade patterns interpreted against legal filings, CFTC/SEC enforcement records, and documented insider trading cases. Data justice frameworks applied to surface whose perspectives are centered and whose are erased.</p><code>legal analysis · news sources · data justice frameworks</code></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="w-section" id="team">
+  <div class="w-inner">
+    <div class="section-label">Team</div>
+    <h2 class="section-title">About this project</h2>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-initial">AY</div><div class="team-name">Angel Yeung</div><div class="team-role">Data pipeline · Visualization</div><div class="team-bio">Led data sourcing, cleaning, and exploratory analysis. Built the API pipeline, documented data provenance, and produced the concentration, whale, and timing visualizations. Co-authored the data reflection on representation and information asymmetry.</div></div>
+      <div class="team-card"><div class="team-initial">TC</div><div class="team-name">Tyler Carmel</div><div class="team-role">Legal research · Policy analysis</div><div class="team-bio">Led research on insider trading law, CFTC/SEC enforcement, and documented cases of suspicious market activity. Connected empirical patterns to structural arguments about information asymmetry and regulatory gaps.</div></div>
+      <div class="team-card"><div class="team-initial">HS</div><div class="team-name">Harshita Somani</div><div class="team-role">Narrative · Storytelling</div><div class="team-bio">Led the overall narrative arc and ensured visualizations are legible to non-technical audiences. Coordinated design and multimedia integration, connecting platform self-presentation to underlying injustices.</div></div>
+    </div>
+    <p style="margin-top: 2.5rem; font-size: 0.88rem; color: var(--muted); max-width: 640px;">This project was produced for a Data Justice course. All trade data was accessed via Polymarket's public APIs. Supplementary sources include news articles, legal analyses, and regulatory filings.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Market of Certainty · 2025</div>
+  <div class="footer-note">A data justice investigation into prediction markets · Yeung · Carmel · Somani</div>
+</footer>
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const csvText = `trader_id,timestamp,market_id,volume,side
+,2026-04-27 08:59:32+00:00,0xa0f4c4924ea1a8b410b4ce821c2a9955fad21a1b19bdcfde90816732278b3dd5,145.0,SELL
+,2026-04-27 08:59:32+00:00,0x7153a8639299f3d91b482b55d9ea16c9d027fa5c14784de09917d6b31aaf8860,7.99643,BUY
+,2026-04-27 08:59:32+00:00,0x90938b2ffdcbc6825adee44e7a6f13570f7a1e58bf85a8862b3ba4fd4f2a1b1f,375.9987,BUY
+,2026-04-27 08:59:32+00:00,0x8296b89deb28b688540b7235a33d4510d8534117d9d6c371a90a8d0bf57831b6,16.61667,BUY
+,2026-04-27 08:59:32+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.558,BUY
+,2026-04-27 08:59:34+00:00,0x986484312eff5bfaf3057953f617386224c548e7aa69ebdcb130d9ae907525aa,125.784817,BUY
+,2026-04-27 08:59:34+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,10.026675000000001,BUY
+,2026-04-27 08:59:34+00:00,0xe85db2c1843ebf5eac87613544d8a7e062039ec023d60fcaab2c9bf6340de110,10.0,BUY
+,2026-04-27 08:59:34+00:00,0x0a7e49c536cc4a9ddfaca10ac9aec476e358c2d29a9e13d5cc320ad0335374a8,50.0,BUY
+,2026-04-27 08:59:34+00:00,0x182390641d3b1b47cc64274b9da290efd04221c586651ba190880713da6347d9,33.95,SELL
+,2026-04-27 08:59:34+00:00,0x1ec9674bc9d3571b35dc906bae3454e50a9f5ec1b174c463b6158c0c3f963be5,89.47,SELL
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,5.04637,BUY
+,2026-04-27 08:59:34+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,263.79993,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,1.00928,BUY
+,2026-04-27 08:59:34+00:00,0xabf6511c2da95d2d9ffc2c6e3582dce473fa581720e87448840252b79e7b7cd3,963.8554,BUY
+,2026-04-27 08:59:34+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,6.93,SELL
+,2026-04-27 08:59:34+00:00,0x3d2a697437b1093ad06d6a74c6fb5a2a499b15d7e895500b5153f66bfaa0e602,5.0,SELL
+,2026-04-27 08:59:34+00:00,0xcb5c7a711ddbf3af60c3dd349d50460d8d27bee46c0cd6cd507690eb5d7646fc,13.21205,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,2.01875,BUY
+,2026-04-27 08:59:34+00:00,0xa7ee3ac7b73e3f4fe9cd71348aa29397f430360c1b5ae0f496145a866acb9338,10.447379999999999,BUY
+,2026-04-27 08:59:34+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,4.8128,BUY
+,2026-04-27 08:59:34+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,9.07695,BUY
+,2026-04-27 08:59:34+00:00,0x315a7e009f52d616c77307e0c1a47636ac1039d11ae2fb4504b238bf54521d36,1.3977199999999999,BUY
+,2026-04-27 08:59:34+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,5.04687,BUY
+,2026-04-27 08:59:34+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,4.8128,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,7.06561,BUY
+,2026-04-27 08:59:34+00:00,0xa0f4c4924ea1a8b410b4ce821c2a9955fad21a1b19bdcfde90816732278b3dd5,110.0,BUY
+,2026-04-27 08:59:34+00:00,0x6d9b4c150ce0c542879e4bacbfd13a95e514e3bb558f9a11caaecac98a32d785,14.6,SELL
+,2026-04-27 08:59:34+00:00,0x203bbc1471414f5d5d7ff7e910eff165fb757e8f5fa731ff598d352f4a9e5ae2,21.7954,BUY
+,2026-04-27 08:59:34+00:00,0x4ba99827272f9eae9a5d668abf040dde278fd54fe94267da7aac43981d945bda,47.56725,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,61.64,SELL
+,2026-04-27 08:59:34+00:00,0x203bbc1471414f5d5d7ff7e910eff165fb757e8f5fa731ff598d352f4a9e5ae2,2.153702,BUY
+,2026-04-27 08:59:34+00:00,0xa7ee3ac7b73e3f4fe9cd71348aa29397f430360c1b5ae0f496145a866acb9338,83.57566,BUY
+,2026-04-27 08:59:34+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,40.37092,BUY
+,2026-04-27 08:59:34+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,4.8128,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,0.97592,BUY
+,2026-04-27 08:59:34+00:00,0x78b26b783c1bd1a67d0e5953d3195bc0c9ca80789682ab4d7abdf6a33471a473,3.01,SELL
+,2026-04-27 08:59:34+00:00,0xa0f4c4924ea1a8b410b4ce821c2a9955fad21a1b19bdcfde90816732278b3dd5,611.4,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,4.9964,BUY
+,2026-04-27 08:59:34+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.09373,BUY
+,2026-04-27 08:59:36+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.09373,BUY
+,2026-04-27 08:59:36+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,10.09373,BUY
+,2026-04-27 08:59:36+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,9.07695,BUY
+,2026-04-27 08:59:36+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.09373,BUY
+,2026-04-27 08:59:36+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,10.09373,BUY
+,2026-04-27 08:59:38+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,14.00856,BUY
+,2026-04-27 08:59:38+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.09373,BUY
+,2026-04-27 08:59:38+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,10.09373,BUY
+,2026-04-27 08:59:38+00:00,0x9fa7f263caaf8dd74ea11847e871829cc7550ece015dd11a56e6bd9853d4536e,9.07695,BUY
+,2026-04-27 08:59:38+00:00,0x86c9f3180e7e16b38625c83f740c18023ff903bfa10f859433a06a606c3005c9,10.09373,BUY
+,2026-04-27 08:59:38+00:00,0xa88f2ffedb2ba2ba42ce2135884c12ed12506c90d8a19dfe47873029dd00bd83,10.09373,BUY
+,2026-04-27 08:59:38+00:00,0xa7ee3ac7b73e3f4fe9cd71348aa29397f430360c1b5ae0f496145a866acb9338,5.04687,BUY`;
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const parts = lines[i].split(',');
+    if (parts.length < 5) continue;
+    const market_id = parts[2].trim();
+    const volume = parseFloat(parts[3]);
+    const side = parts[4].trim();
+    if (market_id && !isNaN(volume)) rows.push({ market_id, volume, side });
+  }
+  return rows;
+}
+
+function aggregateMarkets(rows) {
+  const map = {};
+  for (const r of rows) {
+    if (!map[r.market_id]) map[r.market_id] = { buyVol: 0, sellVol: 0, buyTrades: 0, sellTrades: 0 };
+    if (r.side === 'BUY') { map[r.market_id].buyVol += r.volume; map[r.market_id].buyTrades++; }
+    else { map[r.market_id].sellVol += r.volume; map[r.market_id].sellTrades++; }
+  }
+  return Object.entries(map).map(([id, d]) => {
+    const trades = d.buyTrades + d.sellTrades;
+    const totalVol = d.buyVol + d.sellVol;
+    const buyPct = totalVol > 0 ? (d.buyVol / totalVol) * 100 : 0;
+    const suspicion = buyPct * (1 / Math.log2(trades + 2));
+    const short = '0x' + id.slice(2, 8) + '…' + id.slice(-6);
+    return { id, short, buyVol: d.buyVol, sellVol: d.sellVol, buyTrades: d.buyTrades, sellTrades: d.sellTrades, trades, totalVol, buyPct, suspicion };
+  });
+}
+
+const rows = parseCSV(csvText);
+const markets = aggregateMarkets(rows);
+let chartInst = null;
+
+function render() {
+  const minBuy = parseFloat(document.getElementById('minBuy').value);
+  const maxTrades = parseInt(document.getElementById('maxTrades').value);
+  const sortBy = document.getElementById('sortBy').value;
+  const topN = parseInt(document.getElementById('topN').value);
+
+  let filtered = markets.filter(m => m.buyPct >= minBuy && m.trades <= maxTrades);
+  if (sortBy === 'buyPct') filtered.sort((a, b) => b.buyPct - a.buyPct);
+  else if (sortBy === 'trades') filtered.sort((a, b) => a.trades - b.trades);
+  else if (sortBy === 'volume') filtered.sort((a, b) => b.totalVol - a.totalVol);
+  else filtered.sort((a, b) => b.suspicion - a.suspicion);
+
+  const shown = filtered.slice(0, topN);
+  const total100 = markets.filter(m => m.buyPct === 100).length;
+  const totalAbove80 = markets.filter(m => m.buyPct >= 80).length;
+  const avgTrades = shown.length > 0 ? (shown.reduce((s, m) => s + m.trades, 0) / shown.length) : 0;
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><p class="kpi-label">Total markets</p><p class="kpi-value">${markets.length}</p></div>
+    <div class="kpi"><p class="kpi-label">100% buy markets</p><p class="kpi-value">${total100}</p></div>
+    <div class="kpi"><p class="kpi-label">≥80% buy markets</p><p class="kpi-value">${totalAbove80}</p></div>
+    <div class="kpi"><p class="kpi-label">Avg trades (filtered)</p><p class="kpi-value">${avgTrades.toFixed(1)}</p></div>
+  `;
+
+  const labels = shown.map(m => m.short);
+  const buyPcts = shown.map(m => parseFloat(m.buyPct.toFixed(1)));
+  const barColors = shown.map(m => m.buyPct === 100 ? '#E24B4A' : m.buyPct >= 90 ? '#EF9F27' : '#639922');
+  const borderColors = shown.map(m => m.buyPct === 100 ? '#A32D2D' : m.buyPct >= 90 ? '#854F0B' : '#3B6D11');
+
+  const chartH = Math.max(300, shown.length * 28 + 60);
+  document.querySelector('.buyclub .chart-wrap > div').style.height = chartH + 'px';
+
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(document.getElementById('mainChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Buy %', data: buyPcts, backgroundColor: barColors, borderColor: borderColors, borderWidth: 1, borderSkipped: false }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: {
+          title: (items) => shown[items[0].dataIndex].id,
+          label: (item) => {
+            const m = shown[item.dataIndex];
+            return [`Buy: ${m.buyPct.toFixed(1)}%`, `Trades: ${m.trades}`, `Vol: $${m.totalVol.toFixed(0)}`];
+          }
+        }
+      }},
+      scales: {
+        x: { min: 0, max: 100, title: { display: true, text: 'Buy pressure %', font: { size: 12 }, color: '#888' }, ticks: { callback: v => v + '%', color: '#888', font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.15)' } },
+        y: { ticks: { color: '#888', font: { size: 11 }, autoSkip: false }, grid: { display: false } }
+      }
+    }
+  });
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = shown.map((m, i) => {
+    const badge = m.buyPct === 100 ? '<span class="badge badge-red">100% buy</span>' : m.buyPct >= 90 ? '<span class="badge badge-amber">≥90% buy</span>' : '<span class="badge badge-green">&lt;90%</span>';
+    const suspBadge = m.suspicion > 80 ? '<span class="badge badge-red">critical</span>' : m.suspicion > 50 ? '<span class="badge badge-amber">high</span>' : '<span class="badge badge-green">moderate</span>';
+    const fillW = m.buyPct.toFixed(0);
+    const barColor = m.buyPct === 100 ? '#E24B4A' : m.buyPct >= 90 ? '#EF9F27' : '#639922';
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px;">${i+1}</td>
+      <td style="font-size:11px;font-family:var(--mono);">${m.short}</td>
+      <td>${m.trades}</td>
+      <td>${badge}</td>
+      <td>$${m.buyVol.toFixed(0)}</td>
+      <td>$${m.sellVol.toFixed(0)}</td>
+      <td><div class="bar-bg"><div class="bar-fill" style="width:${fillW}%;background:${barColor};"></div></div></td>
+      <td>${suspBadge}</td>
+      <td style="font-size:10px;font-family:var(--mono);color:var(--muted);">${m.id.slice(0,20)}…</td>
+    </tr>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
